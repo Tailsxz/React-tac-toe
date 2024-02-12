@@ -83,16 +83,20 @@ function Board({ xIsNext, squares, onPlay}) {
 
 export default function Game() {
   //We have lifted up the xIsNext use state as well as defined a history state variable, while removing the squares state variable. Now our board component is fully controlled by the props we are passing to it from our main component, Game.
-  const [xIsNext, setXIsNext] = useState(true);
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
-  const currentSquares = history[history.length - 1];
+  const currentSquares = history[currentMove];
+  const xIsNext = currentMove % 2 === 0;
 
   function handlePlay(nextSquares) {
     //Within our handler we creating a new array (immutability!!!!!!) with a spread operator spreading out each state of the current history, appending the current state to the end, which our currentSquares refers to the last element in the histories array! It is the current squares being passed to the board that is allowing us to render the current state of the board. 
     //It is through storing all the previous states in our history is what allows us to traverse "back in time".
-    setHistory([...history, nextSquares])
-    setXIsNext(!xIsNext);
+    //Since we can now 'go back in time' we will want to update our setHistory to be the current copy of the history state from 0 to the current move,
+    //this way when we click a square after traveling back in time, we can ensure we keep only the history until the currentMove, as we are now playing the game from this previous state, so the future state should be deleted.
+    const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
+
+    setHistory(nextHistory);
+    setCurrentMove(nextHistory.length - 1);
   }
 
   function jumpTo(nextMove) {
@@ -127,6 +131,7 @@ export default function Game() {
       </div>
       <div className="game-info">
         <ol>{moves}</ol>
+        <div className="current-move">{`Move#:${currentMove}`}</div>
       </div>
     </>
   )
