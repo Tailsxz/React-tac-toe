@@ -1,9 +1,7 @@
 # Project Title
-Sleek Nails
+React.dev Tic Tac Toe
 
-[Live Site](https://takingcareofme.netlify.app) Demo Link
-
-Nail Salon website acting as a demo for potential clients.
+Following React.dev's Tic Tac Toe tutorial to build fundamental React knowledge.
 
 ## Getting Started
 
