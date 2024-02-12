@@ -21,7 +21,7 @@ To get a copy of this project, you can fork the repo then clone it as your own.
 
 Open the repo in your favorite IDE and run the command npm i. This will install all necessary dependencies.
 
-To start the development server, run the command npm run start and you're off to the races!
+To start the development server, run the command npm run start(should automatically start the development server on port 3000) and you're off to the races!
 
 ### Optimizations
 
