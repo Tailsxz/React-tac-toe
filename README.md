@@ -28,3 +28,4 @@ To start the development server, run the command npm run start(should automatica
 ### Knowledge gained from this project
 Learned how to bring in and use the useState Hook.
 Solidified React fundamentals such as JavaScript embedding, passing of props, and usage of Hooks.
+Got to apply newly learned concepts and get a grasp of what the flow of react app feels like.
