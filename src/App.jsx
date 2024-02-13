@@ -55,28 +55,30 @@ function Board({ xIsNext, squares, onPlay}) {
     onPlay(nextSquares);
   }
 
-  // Creating a helper function to determine the winner, much similar to our vanilla JS logic! Its not React specific!
+  let Rows = [];
+  let Squares = [];
+  
+  //Dynamically generating the squares with the appropriate value/handler function
+  for (let i = 0; i < squares.length; i++) {
+    Squares.push(<Square value={squares[i]} onSquareClick={() => handleClick(i)}/>);
+  }
+  //Creating the rows array which we will embed into our returned markup.
+  for (let i = 0; i < 3; i++) {
+   Rows.push(Squares.splice(0, 3)); 
+  }
+
+  Rows = Rows.map((row) => {
+    return (
+      <div className="board-row">
+        {row}
+      </div>
+    );
+  })
   
   return (
     <div className="board">
       <p className="gameStatus">{status}</p>
-      <div className="board-row">
-               {/* For each Square we pass in a different number. We are passing it in here as a string, although with the curly brace syntax we can pass in the value of evaluating any JavaScript expression*/}
-               {/* To be able to call our handleClick function passing in the respective index we can define an anonymous arrow function that will call our handleClick function which we hardcoded the respective index passed as an argument. This is much nicer than defining 9 seperate functions that call handleClick with a specific index! The handleClick function's action targets the changing of the boards state, while the anonymous arrow function's action targets passing in the appropriate argument to the handler function call */}
-        <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
-        <Square value={squares[1]} onSquareClick={() => handleClick(1)} />
-        <Square value={squares[2]} onSquareClick={() => handleClick(2)} />
-      </div>
-      <div className="board-row">
-        <Square value={squares[3]} onSquareClick={() => handleClick(3)} />
-        <Square value={squares[4]} onSquareClick={() => handleClick(4)} />
-        <Square value={squares[5]} onSquareClick={() => handleClick(5)} />
-      </div>
-      <div className="board-row">
-        <Square value={squares[6]} onSquareClick={() => handleClick(6)} />
-        <Square value={squares[7]} onSquareClick={() => handleClick(7)} />
-        <Square value={squares[8]} onSquareClick={() => handleClick(8)} />
-      </div>
+      {Rows}
     </div>
   );
 }
@@ -103,7 +105,6 @@ export default function Game() {
     //Here we will update the current move state variable to the move the user clicked on.
     setCurrentMove(nextMove);
     //If the move the user clicked on is even, this means that X will be the next move.
-    setXIsNext(nextMove % 2 === 0);
   }
   //Here we define a moves array which is just our history array mapped to an li representing the button that will allow us to jump back to a previous state. 
                         //we know that map takes in the value, which is the squares array, and the index, which we will be used to represent the move #
@@ -137,6 +138,8 @@ export default function Game() {
   )
 }
 
+// Creating a helper function to determine the winner, much similar to our vanilla JS logic! Its not React specific!
+  
 function calcWinner(squares) {
   const lines = [
     [0, 1, 2],
