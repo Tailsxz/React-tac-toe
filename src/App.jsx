@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 //Defining the individual squares as a component that takes in a prop and uses embeds that prop using the curly brace syntax.
 //we are essentially destructuring the object passed into this component as an argument to only accept its value property.
-function Square({ value, onSquareClick }) {
+function Square({ value, onSquareClick, winningSquares, index }) {
   //Since we are now bringing in the useState Hook, we can remove the parameter accepting value as a prop as well as the props we initially passed to the Squares.
 
   //Setting up a state variable to keep track of the current state of our value. Initializing all squares with a value of null.
@@ -14,9 +14,8 @@ function Square({ value, onSquareClick }) {
   // }
 
   //Since we are declaring a state directly in the Square component, this means each square will have its own state independent from one another!
-  
   //Here we embed it into our actual markup.
-  return <button className="square" onClick={onSquareClick}>
+  return <button className={winningSquares.some(e => e == index) ? 'green square' : 'square'} onClick={onSquareClick}>
               {value}
          </button>;
 }
@@ -24,14 +23,14 @@ function Square({ value, onSquareClick }) {
 // export default identifies this function as the main component we are exporting from this module.
 
                       //A component is identified by having the first character of its identifier capitalized.
-function Board({ xIsNext, squares, onPlay}) {
+function Board({ xIsNext, squares, onPlay, onWin, winningSquares}) {
 
   const winner = calcWinner(squares);
 
   let status;
 
   if (winner) {
-    status = `Winner winner chicken dinner! ${winner} has won!`;
+    status = `Winner winner chicken dinner! ${winner[0]} has won!`;
   } else {
     status = `Next player: ${xIsNext ? 'X' : 'O'}`;
   }
@@ -41,7 +40,7 @@ function Board({ xIsNext, squares, onPlay}) {
   //Setting up the handleClick function we are passing to the board's children, the squares themselves.
   function handleClick(i) {
     //setting a guard clause to immediately return if the square is already filled! Added the || logical operator to return if the game is over(there is a winner);
-    if (squares[i] || calcWinner(squares)) return;
+    if (squares[i] || winner) return;
     //First we create a copy of the current state of squares, storing this array instance into nextSquares.
     const nextSquares = squares.slice();
     //Then we assign the first element to 'X'
@@ -51,23 +50,27 @@ function Board({ xIsNext, squares, onPlay}) {
     // //What's interesting about how this handleClick function is able to be passed as a prop and retain access to squares and setSquares is that it is due to closure!!!! This function will create closure over its lexical environment, this closure is stored in the heap, and therefore this function will always be able to access those variables and functions defined in its lexical scope.
     // //We are using this boolean to figure out whos turn it is, every time a square on the board is flipped, the boolean will be transformed to the opposite value. true => false, false => true
     // setXIsNext(!xIsNext);
-
+    const winnerInfo = calcWinner(nextSquares) 
+    if (winnerInfo) {
+      onWin(winnerInfo[1]);
+      onPlay(nextSquares);
+      return;
+    }
     onPlay(nextSquares);
   }
 
-  let Rows = [];
-  let Squares = [];
-  
+  let boardRows = [];
+  let boardSquares = [];
   //Dynamically generating the squares with the appropriate value/handler function
   for (let i = 0; i < squares.length; i++) {
-    Squares.push(<Square value={squares[i]} onSquareClick={() => handleClick(i)}/>);
+    boardSquares.push(<Square value={squares[i]} onSquareClick={() => handleClick(i)} winningSquares={winningSquares} index={i}/>);
   }
   //Creating the rows array which we will embed into our returned markup.
   for (let i = 0; i < 3; i++) {
-   Rows.push(Squares.splice(0, 3)); 
+   boardRows.push(boardSquares.splice(0, 3)); 
   }
 
-  Rows = Rows.map((row) => {
+  boardRows = boardRows.map((row) => {
     return (
       <div className="board-row">
         {row}
@@ -78,7 +81,7 @@ function Board({ xIsNext, squares, onPlay}) {
   return (
     <div className="board">
       <p className="gameStatus">{status}</p>
-      {Rows}
+      {boardRows}
     </div>
   );
 }
@@ -87,6 +90,7 @@ export default function Game() {
   //We have lifted up the xIsNext use state as well as defined a history state variable, while removing the squares state variable. Now our board component is fully controlled by the props we are passing to it from our main component, Game.
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
+  const [winner, setWinner] = useState([]);
   const currentSquares = history[currentMove];
   const xIsNext = currentMove % 2 === 0;
 
@@ -100,11 +104,23 @@ export default function Game() {
     setHistory(nextHistory);
     setCurrentMove(nextHistory.length - 1);
   }
-
+  
   function jumpTo(nextMove) {
     //Here we will update the current move state variable to the move the user clicked on.
     setCurrentMove(nextMove);
+    let currentWinner = calcWinner(history[nextMove]);
+    if (currentWinner === null) {
+      setWinner([]);
+      console.log('hello')
+    } else {
+      console.log('bye')
+      setWinner([...currentWinner[1]]);
+    }
     //If the move the user clicked on is even, this means that X will be the next move.
+  }
+
+  function handleWinner(winner) {
+    setWinner([...winner]);
   }
   //Here we define a moves array which is just our history array mapped to an li representing the button that will allow us to jump back to a previous state. 
                         //we know that map takes in the value, which is the squares array, and the index, which we will be used to represent the move #
@@ -127,7 +143,7 @@ export default function Game() {
     <>
       <div className="game">
         <div className="game-board">
-          <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay}/>
+          <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} onWin={handleWinner} winningSquares={winner}/>
         </div>
       </div>
       <div className="game-info">
@@ -157,7 +173,7 @@ function calcWinner(squares) {
     if (squares[a] &&
         squares[a] === squares[b] &&
         squares[b] === squares[c]) {
-      return squares[a];
+      return [squares[a], lines[i]];
     }
   }
   
