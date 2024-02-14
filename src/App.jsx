@@ -12,10 +12,11 @@ function Square({ value, onSquareClick, winningSquares, index }) {
   //   //Rather than console logging on click, now we use the setValue() function to set the current value to 'X' when a square is clicked. By calling this set function from an onClick handler, we are telling react to re-render that Square whenever its button is clicked! Not only this but the React Docs state "When you call a set function in a component, React automatically updates the child components inside too." This means that when we call the setter function of useState, not only will the component calling the setter re-render, but all of its children will as well! This ensures the updated state is reflected in the component as well as its child components.
   //   setValue('X');
   // }
-
+  let winner = winningSquares.some((e, i) => e === index) ? 'green' : '';
+  console.log(winningSquares);
   //Since we are declaring a state directly in the Square component, this means each square will have its own state independent from one another!
   //Here we embed it into our actual markup.
-  return <button className={winningSquares.some(e => e == index) ? 'green square' : 'square'} onClick={onSquareClick}>
+  return <button className={`square ${winner}`} onClick={onSquareClick}>
               {value}
          </button>;
 }
