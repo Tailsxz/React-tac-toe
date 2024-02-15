@@ -64,16 +64,16 @@ function Board({ xIsNext, squares, onPlay, onWin, winningSquares}) {
   let boardSquares = [];
   //Dynamically generating the squares with the appropriate value/handler function
   for (let i = 0; i < squares.length; i++) {
-    boardSquares.push(<Square value={squares[i]} onSquareClick={() => handleClick(i)} winningSquares={winningSquares} index={i}/>);
+    boardSquares.push(<Square value={squares[i]} onSquareClick={() => handleClick(i)} winningSquares={winningSquares} index={i} key={i}/>);
   }
   //Creating the rows array which we will embed into our returned markup.
   for (let i = 0; i < 3; i++) {
    boardRows.push(boardSquares.splice(0, 3)); 
   }
 
-  boardRows = boardRows.map((row) => {
+  boardRows = boardRows.map((row, i) => {
     return (
-      <div className="board-row">
+      <div className="board-row" key={i}>
         {row}
       </div>
     );
