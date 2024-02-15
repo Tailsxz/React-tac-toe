@@ -31,3 +31,5 @@ Solidified React fundamentals such as JavaScript embedding, passing of props, an
 Got to apply newly learned concepts and get a grasp of what the flow of react app feels like.
 Experienced what it is like debugging in React.
 Started to grasp how data flows within a React application as well as what causes rerenders in React.
+This was a great little tutorial to dip my toes into React :D had a blast following this. 
+I am starting to see how powerful React can be.
