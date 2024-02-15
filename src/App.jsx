@@ -60,29 +60,41 @@ function Board({ xIsNext, squares, onPlay, onWin, winningSquares}) {
     onPlay(nextSquares, i);
   }
 
-  let boardRows = [];
-  let boardSquares = [];
-  //Dynamically generating the squares with the appropriate value/handler function
-  for (let i = 0; i < squares.length; i++) {
-    boardSquares.push(<Square value={squares[i]} onSquareClick={() => handleClick(i)} winningSquares={winningSquares} index={i} key={i}/>);
-  }
-  //Creating the rows array which we will embed into our returned markup.
-  for (let i = 0; i < 3; i++) {
-   boardRows.push(boardSquares.splice(0, 3)); 
-  }
+  // let boardRows = [];
+  // let boardSquares = [];
+  // //Dynamically generating the squares with the appropriate value/handler function
+  // for (let i = 0; i < squares.length; i++) {
+  //   boardSquares.push(<Square value={squares[i]} onSquareClick={() => handleClick(i)} winningSquares={winningSquares} index={i} key={i}/>);
+  // }
+  // //Creating the rows array which we will embed into our returned markup.
+  // for (let i = 0; i < 3; i++) {
+  //  boardRows.push(boardSquares.splice(0, 3)); 
+  // }
 
-  boardRows = boardRows.map((row, i) => {
-    return (
-      <div className="board-row" key={i}>
-        {row}
-      </div>
-    );
-  })
-  
+  // boardRows = boardRows.map((row, i) => {
+  //   return (
+  //     <div className="board-row" key={i}>
+  //       {row}
+  //     </div>
+  //   );
+  // })
+  const boardRows = Array(3).fill(null);
+
+
   return (
     <div className="board">
       <p className="gameStatus">{status}</p>
-      {boardRows}
+      {boardRows.map((_, i) => {
+        const row = [];
+        for (let j = i * 3; j < 3 * (i + 1); j++) {
+          console.log('hello')
+          row.push(<Square value={squares[i]} onSquareClick={() => handleClick(i)} winningSquares={winningSquares} index={i} key={i}/>);
+        }
+        return (<div className="board-row" key={i}>
+               {row}
+               </div>
+               );
+      })}
     </div>
   );
 }
