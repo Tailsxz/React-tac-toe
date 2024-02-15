@@ -88,7 +88,7 @@ function Board({ xIsNext, squares, onPlay, onWin, winningSquares}) {
         const row = [];
         for (let j = i * 3; j < 3 * (i + 1); j++) {
           console.log('hello')
-          row.push(<Square value={squares[i]} onSquareClick={() => handleClick(i)} winningSquares={winningSquares} index={i} key={i}/>);
+          row.push(<Square value={squares[j]} onSquareClick={() => handleClick(i)} winningSquares={winningSquares} index={j} key={j}/>);
         }
         return (<div className="board-row" key={i}>
                {row}
