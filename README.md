@@ -30,6 +30,6 @@ Learned how to bring in and use the useState Hook.
 Solidified React fundamentals such as JavaScript embedding, passing of props, and usage of Hooks.
 Got to apply newly learned concepts and get a grasp of what the flow of react app feels like.
 Got hands on experience in debugging in a React app.
-Started to grasp how data flows within a React application as well as what causes rerenders in React.
+Starting to grasp the unidirectional data flow of a React app, as well as what triggers a re-render in a React application.
 This was a great little tutorial to dip my toes into React :D had a blast following this. 
-I am starting to see how powerful React can be.
+I am starting to see how powerful React can be. At first it was overwhelming and hard to understand this flow coming from the mental model I formed for Vanilla JavaScript, but I am starting to see the big picture.
