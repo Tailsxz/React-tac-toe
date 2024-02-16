@@ -121,7 +121,7 @@ export default function Game() {
     } else {
       setGameTied(tieGame);
     }
-  });
+  }, [moveHistory, winner]);
 
   function handlePlay(nextSquares, recentSquare) {
     //Within our handler we are creating a new array (immutability!!!!!!) with a spread operator spreading out each state of the current history, appending the current state to the end, which our currentSquares refers to the last element in the histories array! It is the current squares being passed to the board that is allowing us to render the current state of the board. 
