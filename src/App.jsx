@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 //Defining the individual squares as a component that takes in a prop and uses embeds that prop using the curly brace syntax.
 //we are essentially destructuring the object passed into this component as an argument to only accept its value property.
@@ -13,7 +13,6 @@ function Square({ value, onSquareClick, winningSquares, index }) {
   //   setValue('X');
   // }
   let winner = winningSquares.some((e, i) => e === index) ? 'green' : '';
-  console.log(winningSquares);
   //Since we are declaring a state directly in the Square component, this means each square will have its own state independent from one another!
   //Here we embed it into our actual markup.
   return <button className={`square ${winner}`} onClick={onSquareClick}>
@@ -24,7 +23,7 @@ function Square({ value, onSquareClick, winningSquares, index }) {
 // export default identifies this function as the main component we are exporting from this module.
 
                       //A component is identified by having the first character of its identifier capitalized.
-function Board({ xIsNext, squares, onPlay, onWin, winningSquares}) {
+function Board({ xIsNext, squares, onPlay, onWin, onTie, winningSquares }) {
 
   const winner = calcWinner(squares);
 
@@ -57,6 +56,13 @@ function Board({ xIsNext, squares, onPlay, onWin, winningSquares}) {
       onPlay(nextSquares, i);
       return;
     }
+    // const gameTied = calcTie(nextSquares, winnerInfo);
+    // if (gameTied) {
+    //   console.log('game tied!')
+    //   onTie(gameTied);
+    //   onPlay(nextSquares, i);
+    // }
+
     onPlay(nextSquares, i);
   }
 
@@ -87,7 +93,6 @@ function Board({ xIsNext, squares, onPlay, onWin, winningSquares}) {
       {boardRows.map((_, i) => {
         const row = [];
         for (let j = i * 3; j < 3 * (i + 1); j++) {
-          console.log('hello')
           row.push(<Square value={squares[j]} onSquareClick={() => handleClick(j)} winningSquares={winningSquares} index={j} key={j}/>);
         }
         return (<div className="board-row" key={i}>
@@ -105,22 +110,31 @@ export default function Game() {
   const [currentMove, setCurrentMove] = useState(0);
   const [moveHistory, setMoveHistory] = useState([]);
   const [winner, setWinner] = useState([]);
+  const [gameTied, setGameTied] = useState(false);
   const currentSquares = history[currentMove];
   const xIsNext = currentMove % 2 === 0;
 
-  function handlePlay(nextSquares, recentSquare) {
-    if (!nextSquares) {
-      setMoveHistory([...moveHistory, recentSquare]);
+  useEffect(() => {
+    const tieGame = calcTie(moveHistory, winner);
+    if (tieGame && currentMove !== 9) {
+      setGameTied(false);
+    } else {
+      setGameTied(tieGame);
     }
-    //Within our handler we creating a new array (immutability!!!!!!) with a spread operator spreading out each state of the current history, appending the current state to the end, which our currentSquares refers to the last element in the histories array! It is the current squares being passed to the board that is allowing us to render the current state of the board. 
+  });
+
+  function handlePlay(nextSquares, recentSquare) {
+    //Within our handler we are creating a new array (immutability!!!!!!) with a spread operator spreading out each state of the current history, appending the current state to the end, which our currentSquares refers to the last element in the histories array! It is the current squares being passed to the board that is allowing us to render the current state of the board. 
     //It is through storing all the previous states in our history is what allows us to traverse "back in time".
     //Since we can now 'go back in time' we will want to update our setHistory to be the current copy of the history state from 0 to the current move,
     //this way when we click a square after traveling back in time, we can ensure we keep only the history until the currentMove, as we are now playing the game from this previous state, so the future state should be deleted.
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
+    //Here we don't need the + 1 for the moveHistory because it starts off as an empty array.
     setMoveHistory([...moveHistory.slice(0, currentMove), recentSquare])
     setHistory(nextHistory);
     setCurrentMove(nextHistory.length - 1);
   }
+
   
   function jumpTo(nextMove) {
     //Here we will update the current move state variable to the move the user clicked on.
@@ -128,17 +142,19 @@ export default function Game() {
     let currentWinner = calcWinner(history[nextMove]);
     if (currentWinner === null) {
       setWinner([]);
-      console.log('hello')
     } else {
-      console.log('bye')
       setWinner([...currentWinner[1]]);
     }
     //If the move the user clicked on is even, this means that X will be the next move.
   }
-
+  
   function handleWinner(winner) {
     setWinner([...winner]);
   }
+
+  function handleTie(gameTied) {
+    setGameTied(gameTied);
+  } 
   //Here we define a moves array which is just our history array mapped to an li representing the button that will allow us to jump back to a previous state. 
                         //we know that map takes in the value, which is the squares array, and the index, which we will be used to represent the move #
   const moves = history.map((squares, move) => {
@@ -160,13 +176,16 @@ export default function Game() {
     <>
       <div className="game">
         <div className="game-board">
-          <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} onWin={handleWinner} winningSquares={winner}/>
+          <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} onWin={handleWinner} onTie={handleTie} winningSquares={winner}/>
         </div>
       </div>
       <div className="game-info">
         <ol>{moves}</ol>
         <div className="current-move">{`Move#:${currentMove}`}</div>
       </div>
+      {gameTied && <div>
+          <h1>The game was a Tie, play another! :D</h1>
+        </div>}
     </>
   )
 }
@@ -195,4 +214,8 @@ function calcWinner(squares) {
   }
   
   return null;
+}
+
+function calcTie(moves, winner) {
+  return (moves.length === 9 && winner.length === 0);
 }
