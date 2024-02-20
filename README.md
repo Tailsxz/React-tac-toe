@@ -1,5 +1,4 @@
-# Project Title
-React.dev Tic Tac Toe
+#React Tac Toe
 
 Following React.dev's Tic Tac Toe tutorial to build fundamental React knowledge.
 
